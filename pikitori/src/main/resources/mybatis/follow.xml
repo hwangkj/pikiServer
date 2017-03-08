@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="follow">
+
+	<insert id="following" parameterType="follow">
+		<![CDATA[
+			insert into follow (user_no, user_no_friend) values ( #{user_no}, #{user_no_friend} );
+		]]>
+	</insert>
+
+
+	<delete id="unfollowing" parameterType="follow">
+		<![CDATA[
+			delete from follow where user_no = #{user_no } and user_no_friend = #{user_no_friend };
+		]]>
+	</delete>
+
+	<select id="followCheck" parameterType="follow" resultType="follow">
+		<![CDATA[
+			select user_no, user_no_friend from follow where user_no = #{user_no } and user_no_friend = #{user_no_friend } 
+		]]>
+	</select>
+
+	<update id="userCount" parameterType="follow">
+      <![CDATA[
+         UPDATE pikiuser
+            SET user_following_count = user_following_count+1
+          WHERE user_no = #{user_no };
+      ]]>
+	</update>
+
+	<update id="userFriendCount" parameterType="follow">
+      <![CDATA[
+         UPDATE pikiuser
+          SET user_follower_count = user_follower_count+1
+         WHERE user_no = #{user_no_friend};
+      ]]>
+	</update>
+	<update id="userDecount" parameterType="follow">
+      <![CDATA[
+         UPDATE pikiuser
+            SET user_following_count = user_following_count-1
+          WHERE user_no = #{user_no };
+      ]]>
+	</update>
+
+	<update id="userFriendDecount" parameterType="follow">
+      <![CDATA[
+         UPDATE pikiuser
+          SET user_follower_count = user_follower_count-1
+         WHERE user_no = #{user_no_friend};
+      ]]>
+	</update>
+</mapper>

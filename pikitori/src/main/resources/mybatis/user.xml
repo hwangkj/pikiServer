@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	<select id="getAlluser" resultType="User">
+	<![CDATA[
+	select 	user_no,
+			user_id,
+			user_password,
+			user_name,
+			user_regdate as user_reg_date ,
+			user_role,
+			user_status,
+			user_profile_url,
+			user_profile_msg,
+			user_post_count,
+			user_follower_count,
+			user_following_count,
+			user_social_index,
+			user_social_id 
+	from pikiuser
+	]]>
+	</select>
+	<!-- getEmail -->
+	<select id="checkEmail" parameterType="string" resultType="User">
+	<![CDATA[
+	select user_no, user_id from pikiuser 
+	where user_id=#{user_id}
+	]]>
+
+	</select>
+	<!-- getUserName -->
+	<select id="checkNickname" parameterType="string" resultType="user">
+	<![CDATA[
+	select user_no, user_name from pikiuser 
+	where user_name=#{user_name}
+	]]>
+
+	<!--SOCIAL INDEX 1:pikiuser 2:googleuser 3.facebookuser  -->
+	</select>
+	<!-- CreateUser -->
+	<insert id="addUser" parameterType="user">
+	<![CDATA[
+	insert into pikiuser(user_id,
+						user_password,
+						user_name,
+						user_regdate,
+						user_role,
+						user_status,
+						user_profile_msg,
+						user_post_count,
+						user_follower_count,
+						user_following_count,
+						user_social_index,
+						user_social_id) 
+	values(#{user_id},#{user_password},#{user_name},sysdate(),1,1,
+	"메시지를 남겨주세요.",0,0,0,1,null)
+	]]>
+	</insert>
+
+	<select id="getByEmailAndPassword" parameterType="User" resultType="User">
+	<![CDATA[
+	select user_no, 
+		   user_id,
+		   user_name,
+		   user_regdate as user_reg_date,
+		   user_role,
+		   user_status,
+		   user_profile_url,
+		   user_profile_url_thumb,
+		   user_profile_msg,
+		   user_post_count,
+		   user_follower_count,
+		   user_following_count,
+		   user_social_index,
+		   user_social_id
+		    from pikiuser where user_id=#{user_id} && user_password=#{user_password}
+	]]>
+	</select>
+	
+	<select id="getByUserIndex" parameterType="user" resultType="user">
+	<![CDATA[
+	select user_no, 
+		   user_id,
+		   user_name,
+		   user_regdate as user_reg_date,
+		   user_role,
+		   user_status,
+		   user_profile_url,
+		   user_profile_url_thumb,
+		   user_profile_msg,
+		   user_post_count,
+		   user_follower_count,
+		   user_following_count,
+		   user_social_index,
+		   user_social_id
+		    from pikiuser where user_no=#{user_no} && user_social_index=#{user_social_index}
+	]]>
+	</select>
+	
+	<select id="getBySocailIndex" parameterType="user" resultType="user">
+	<![CDATA[
+	select user_no, 
+		   user_id,
+		   user_name,
+		   user_regdate as user_reg_date,
+		   user_role,
+		   user_status,
+		   user_profile_url,
+		   user_profile_url_thumb,
+		   user_profile_msg,
+		   user_post_count,
+		   user_follower_count,
+		   user_following_count,
+		   user_social_index,
+		   user_social_id
+		    from pikiuser where user_social_id=#{user_social_id} && user_social_index=#{user_social_index}
+	]]>
+	</select>
+
+	<select id="getBySocialID" parameterType="user" resultType="user">
+	<![CDATA[
+		select user_no, 
+		   user_id,
+		   user_name,
+		   user_regdate as user_reg_date,
+		   user_role,
+		   user_status,
+		   user_profile_url,
+		   user_profile_msg,
+		   user_post_count,
+		   user_follower_count,
+		   user_following_count,
+		   user_social_index,
+		   user_social_id
+		    from pikiuser where user_social_id=#{user_social_id}
+	]]>
+	</select>
+	<!-- CreateF_user -->
+	<insert id="addF_User" parameterType="user">
+	<![CDATA[
+		insert into pikiuser(
+						user_id,
+						user_password,
+						user_name,
+						user_regdate,
+						user_role,
+						user_status,
+						user_profile_url,
+						user_profile_msg,
+						user_post_count,
+						user_follower_count,
+						user_following_count,
+						user_social_index,
+						user_social_id) 
+	values(#{user_id},null,#{user_name},sysdate(),1,1,#{user_profile_url},"",0,0,0,#{user_social_index},#{user_social_id})
+	]]>
+	</insert>
+
+	<update id="update_profile" parameterType="user">
+	 <![CDATA[ 
+			update pikiuser
+				set user_name=#{user_name},
+					user_profile_msg=#{user_profile_msg},
+					user_profile_url = #{user_profile_url},
+					user_profile_url_thumb = #{user_profile_url_thumb}
+					where user_no= #{user_no}
+	  ]]>
+	</update>
+
+<!-- 	<update id="update_profileUrl" parameterType="HashMap">
+	 <![CDATA[ 
+			update pikiuser
+				set user_profile_url=#{url} where user_id=#{user_id}
+	  ]]>
+	</update> -->
+	
+	<select id="getByNo" parameterType="Long" resultType="user">
+	<![CDATA[
+		select user_no, 
+		   user_id,
+		   user_name,
+		   user_regdate as user_reg_date,
+		   user_role,
+		   user_status,
+		   user_profile_url,
+		   user_profile_url_thumb,
+		   user_profile_msg,
+		   user_post_count,
+		   user_follower_count,
+		   user_following_count,
+		   user_social_index,
+		   user_social_id
+		    from pikiuser where user_no=#{no}
+	]]>
+	</select>
+
+<!-- 	<select id="searchNameList" parameterType="user" resultType="user">
+  		<![CDATA[
+  			select 
+  			pikiuser.user_no, 
+  			pikiuser.user_id, 
+  			pikiuser.user_name, 
+  			pikiuser.user_profile_url_thumb as user_profile_url, 
+  			pikiuser.user_profile_msg 
+  			from pikiuser where user_id like CONCAT('%',#{user_id },'%') || user_name like CONCAT('%',#{user_name},'%')
+  		]]>
+	</select> -->
+	
+	<select id="searchNameList" parameterType="HashMap" resultType="user">
+  		<![CDATA[
+	            select
+				p.user_no, 
+				p.user_id, 
+				p.user_name, 
+				p.user_profile_url_thumb as user_profile_url, 
+				p.user_profile_msg 
+			from(
+				select 
+				*
+				from pikiuser 
+				where user_id like CONCAT('%',#{str},'%') || user_name like CONCAT('%',#{str},'%') 
+             )p where p.user_no not in (select user_no from pikiuser where user_no = #{auth_user_no});
+  		]]>
+	</select>
+	
+	<select id="followlist" parameterType="user" resultType="follow"> 
+	<![CDATA[
+	select pikiuser.user_no as user_no, pikiuser.user_id as user_id, pikiuser.user_name as user_name,
+		u.user_no as user_no_friend,
+		u.user_id as user_id_friend,
+		u.user_name as user_name_friend,
+		u.user_profile_url_thumb as user_profile_url_friend,
+		u.user_profile_msg as user_profile_msg_friend
+		from pikiuser 
+		INNER join follow f on (f.user_no = pikiuser.user_no)
+		INNER join pikiuser u on (u.user_no = f.user_no_friend) where pikiuser.user_no = #{user_no }
+	]]>
+	</select>
+
+	<select id="followerlist" parameterType="user" resultType="follow">
+	<![CDATA[
+		select 	u.user_no as user_no,
+				u.user_id as user_id,
+		  		u.user_name as user_name,
+				pikiuser.user_no as user_no_friend,
+				pikiuser.user_id as user_id_friend,
+				pikiuser.user_name as user_name_friend,
+				pikiuser.user_profile_url_thumb as user_profile_url_friend,
+				pikiuser.user_profile_msg as user_profile_msg_friend
+		from pikiuser 
+				INNER join follow f on (f.user_no = pikiuser.user_no)
+				INNER join pikiuser u on (u.user_no = f.user_no_friend) 
+		where user_no_friend = #{user_no}
+
+	]]>
+	</select>
+
+	<select resultType="user" id="webLogin" parameterType="user">
+		<![CDATA[ select 	user_no, 
+							user_id, 
+							user_name, 
+							user_regdate as user_reg_date, 
+							user_password, 
+							user_role, 
+							user_status,
+							user_profile_url, 
+							user_profile_msg, 
+							user_post_count, 
+							user_follower_count, 
+							user_following_count, 
+							user_social_index, 
+							user_social_id 
+				from pikiuser 
+				where user_id=#{user_id} && user_password=#{user_password} 
+		]]>
+	</select>
+	
+	<select id="getToken" parameterType="Long" resultType="String">
+		<![CDATA[
+			select token from pikiuserToken where user_no=#{user_no};
+		]]>
+	</select>
+	
+	<insert id="userTokenInsert" parameterType="Map">
+		<![CDATA[
+			insert into pikiuserToken(user_no, token) values(#{user_no},#{token});
+		]]>
+	</insert>
+	
+	<update id="userTokenUpdate" parameterType="Map">
+		<![CDATA[
+			update pikiuserToken SET token = #{token} where user_no=#{user_no};
+		]]>
+	</update>
+
+</mapper>
+

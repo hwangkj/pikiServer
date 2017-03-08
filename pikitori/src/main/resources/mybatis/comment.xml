@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comment">
+
+	<select id="showreplyList" parameterType="post" resultType="Comment">
+   <![CDATA[
+   		select 
+   		 c.comment_no as comment_no,
+   		 c.comment_content as comment_content,
+   		 c.comment_regdate as comment_regdate,
+   		 c.post_no as post_no,
+   		 c.user_no as user_no,
+         p.user_name as user_name,
+         p.user_profile_url_thumb as user_profile_url
+         from 
+         	comment c, 
+         	pikiuser p 
+         where 	c.post_no=#{post_no} 
+         	and p.user_no=c.user_no
+   ]]>
+	</select>
+
+	<select id="show5ReplyList" parameterType="post" resultType="Comment">
+   <![CDATA[
+   		select 
+   		 c.comment_no as comment_no,
+   		 c.comment_content as comment_content,
+   		 c.comment_regdate as comment_regdate,
+   		 c.post_no as post_no,
+   		 c.user_no as user_no,
+         p.user_name as user_name,
+         p.user_profile_url_thumb as user_profile_url
+         from 
+         	comment c, 
+         	pikiuser p 
+         where 	c.post_no=#{post_no}  
+         	and p.user_no=c.user_no Limit 0,5
+   ]]>
+	</select>
+
+	<insert id="addReply" parameterType="Comment">
+   	<![CDATA[
+	   insert into comment(comment_content,
+	                  comment_regdate,
+	                  user_no,
+	                  post_no)
+	   values(#{comment_content},sysdate(),#{user_no},#{post_no})
+	]]>
+	</insert>
+	
+	<delete id="deleteComment" parameterType="Comment">
+   	<![CDATA[
+	   delete from comment where comment_no = #{comment_no}
+	]]>
+	</delete>
+
+	<update id="updateCount" parameterType="Comment">
+	<![CDATA[
+	update post set post_comment_count = post_comment_count + 1  where post_no = #{post_no};
+	]]>
+	</update>
+
+	<update id="deleteCount" parameterType="Comment">
+	<![CDATA[
+	update post set post_comment_count = post_comment_count - 1  where post_no = #{post_no};
+	]]>
+	</update>
+	
+	<delete id="deleteAllbyPost" parameterType="post">
+	<![CDATA[
+	delete from comment where post_no = #{post_no};
+	]]>
+	</delete>
+	
+</mapper>

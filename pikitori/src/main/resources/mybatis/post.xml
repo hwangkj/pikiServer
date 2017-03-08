@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="post">
+	<!-- create post  -->	
+	<insert id ="addPost" parameterType="post">
+		<![CDATA[
+			insert into post(post_content,
+							 post_movie,
+							 post_regdate,
+							 post_ispublic,
+							 post_comment_count,
+							 post_heart_count,
+							 user_no)
+			values(
+				#{post_content},
+				#{post_movie},
+				now(),
+				#{post_ispublic},
+				0,
+				0,
+				#{user_no})
+		]]>
+		<selectKey keyProperty="post_no" resultType="Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<insert id="addAlbum" parameterType="HashMap">
+		insert into album(post_no,picture_no)
+			values (#{post_no},#{picture_no})
+	</insert>
+	
+	<insert id="addPostTag" parameterType="HashMap">
+		insert into post_tag(post_no,tag_no)
+		select * from (select #{post_no},#{tag_no})as tmp
+		where not exists(select post_no, tag_no from post_tag where post_no = #{post_no} and tag_no =#{tag_no} )LIMIT 1
+	</insert>
+	
+	<!-- update post  -->
+		
+	<update id="updateMovieUrlsuccess" parameterType="HashMap">
+	<![CDATA[
+		update post set post_movie = #{post_movie}
+		where post_no = #{post_no}
+		]]>
+	</update>
+	
+	<delete id="updateMovieUrlfail_post" parameterType="HashMap">
+	<![CDATA[
+		delete from post where post_no = #{post_no}
+		]]>
+	</delete>
+	
+	<delete id="updateMovieUrlfail_Album" parameterType="HashMap">
+	<![CDATA[
+		delete from album where post_no = #{post_no}
+		]]>
+	</delete>
+	
+	<delete id="updateMovieUrlfail_postTag" parameterType="HashMap">
+	<![CDATA[
+		delete from post_tag where post_no = #{post_no}
+		]]>
+	</delete>
+	
+	<update id="updatePostUpCount" parameterType="HashMap">
+	<![CDATA[
+		update pikiuser set user_post_count = user_post_count + 1 
+		where user_no = #{user_no}
+		]]>
+	</update>
+	
+<!-- 	<select id="showpostList" parameterType="user" resultType="Post">
+	<![CDATA[		  
+		select 
+			a.post_no ,
+            a.post_content,
+            a.post_movie,
+            a.post_regdate,
+            a.post_ispublic,
+            a.post_comment_count,
+            a.post_heart_count,
+            a.user_no,
+		    b.user_name as user_name, 
+		    IFNULL(b.user_profile_url_thumb ,'')as user_profile_url,
+			h.user_no IS NOT NULL as heartflag
+		from pikiuser b ,
+             post a
+			LEFT JOIN heart h
+			on h.post_no = a.post_no
+		where a.user_no = b.user_no and b.user_no=#{user_no};
+	]]>
+	</select> -->
+	
+	<select id="postTagList" parameterType="long" resultType="Post">
+		<![CDATA[
+	      	select  
+			  a.post_no ,
+			  a.post_content,
+			  a.post_movie,
+			  a.post_regdate,
+			  a.post_ispublic,
+			  a.post_comment_count,
+              a.post_heart_count,
+			  a.user_no,
+			  pk.user_name as user_name, 
+			  IFNULL(pk.user_profile_url_thumb ,'') as user_profile_url,
+			  h.user_no IS NOT NULL as heartflag
+			  from post a 
+				  inner JOIN post_tag pt on a.post_no = pt.post_no and pt.tag_no=#{tag_no}
+				  inner join pikiuser pk on a.user_no = pk.user_no
+                  left join heart h on a.post_no = h.post_no and h.user_no = #{user_no}
+			where a.post_ispublic =1;
+		]]>
+	</select>
+	
+	<select id="showpostList" parameterType="common" resultType="Post">
+		<![CDATA[		  
+	      	select  
+			  a.post_no ,
+			  a.post_heart_count,
+			  a.post_content,
+			  a.post_movie,
+			  a.post_regdate,
+			  a.post_ispublic,
+			  a.post_comment_count,
+			  a.user_no,
+			  b.user_name as user_name, 
+			  IFNULL(b.user_profile_url_thumb ,'') as user_profile_url,
+			  h.user_no IS NOT NULL as heartflag
+			  from post a inner join pikiuser b on a.user_no = b.user_no
+			      left join heart h on a.post_no = h.post_no and h.user_no = #{auth_user_no}
+			where b.user_no= #{user_no}
+		]]>
+	</select>
+	
+	<select id="showpostPublicList" parameterType="common" resultType="Post">
+		<![CDATA[		  
+	      	select  
+			  a.post_no ,
+			  a.post_heart_count,
+			  a.post_content,
+			  a.post_movie,
+			  a.post_regdate,
+			  a.post_ispublic,
+			  a.post_comment_count,
+			  a.user_no,
+			  b.user_name as user_name, 
+			  IFNULL(b.user_profile_url_thumb ,'') as user_profile_url,
+			  h.user_no IS NOT NULL as heartflag
+			  from post a inner join pikiuser b on a.user_no = b.user_no
+			      left join heart h on a.post_no = h.post_no and h.user_no = #{auth_user_no}
+			where b.user_no= #{user_no} and a.post_ispublic = 1
+		]]>
+	</select>
+	
+	<insert id="addHeart" parameterType="HashMap">
+		insert into album(post_no,picture_no)
+			values (#{post_no},#{picture_no})
+	</insert>
+	
+	<insert id="createHeart" parameterType="heart">	
+		insert into heart (post_no, user_no) 
+		values (#{post_no},#{auth_user_no})
+	</insert>
+	
+	<delete id="deleteHeart" parameterType="heart">	
+		delete from heart 
+		where post_no = #{post_no} and user_no = #{auth_user_no};
+	</delete>
+	
+	<delete id="deleteAllHeartbyPost" parameterType="post">	
+		delete from heart 
+		where post_no = #{post_no};
+	</delete>
+	
+	<update id="updateHeart" parameterType="heart">
+		update post set post_heart_count = post_heart_count + 1  where post_no =  #{post_no}
+
+	</update>
+	
+	<update id="updateUnHeart" parameterType="heart">
+		update post set post_heart_count = post_heart_count -1  where post_no =  #{post_no}
+	</update>
+	
+<!-- 	<select id="getPostWithHeart" parameterType="heart" resultType="post">
+		<![CDATA[		  
+			select 
+				a.post_no ,
+	            a.post_content,
+	            a.post_movie,
+	            a.post_regdate,
+	            a.post_ispublic,
+	            a.post_comment_count,
+	            a.post_heart_count,
+	            a.user_no,
+			    b.user_name as user_name, 
+			    IFNULL(b.user_profile_url_thumb ,'')as user_profile_url,
+				h.user_no IS NOT NULL as heartflag
+			from pikiuser b ,
+	             post a
+				LEFT JOIN heart h
+				on h.post_no = a.post_no
+			where a.user_no = b.user_no and a.post_no=#{post_no} and b.user_no=#{user_no}
+		]]>
+	</select> -->
+	
+	<select id="getPostWithHeart" parameterType="user" resultType="Post">
+	   <![CDATA[        
+	      select  
+		  a.post_no ,
+		  a.post_content,
+		  a.post_movie,
+		  a.post_regdate,
+		  a.post_ispublic,
+		  a.post_comment_count,
+		  a.post_heart_count,
+		  a.user_no,
+		  b.user_name as user_name, 
+		  IFNULL(b.user_profile_url_thumb ,'') as user_profile_url,
+		  h.user_no IS NOT NULL as heartflag
+		  from post a inner join pikiuser b on a.user_no = b.user_no
+			      left join heart h on a.post_no = h.post_no and h.user_no = #{auth_user_no}
+			where b.user_no= #{user_no} and a.post_no = #{post_no}
+	   ]]>
+	</select>
+	
+	<select id="getPost" parameterType="post" resultType="post">
+		<![CDATA[		  
+			select 
+				a.post_no ,
+	            a.post_content,
+	            a.post_movie,
+	            a.post_regdate,
+	            a.post_ispublic,
+	            a.post_comment_count,
+	            a.post_heart_count,
+	            a.user_no
+			from post a
+			where a.post_no=#{post_no}
+		]]>
+	</select>
+	
+	<update id="updatePost"  parameterType="post" >
+		<![CDATA[	
+	         update post 
+              	set 
+              	post_content= #{post_content},
+              	post_ispublic=#{post_ispublic}
+             where post_no = #{post_no}
+         ]]>
+	</update>
+	
+	<delete id="deletePost" parameterType="post">
+		<![CDATA[  
+			delete from post where post_no = #{post_no};
+		]]>
+	</delete>
+	
+	<delete id="deletePostTag" parameterType="post">
+		<![CDATA[  
+			delete from post_tag where post_no = #{post_no};
+		]]>
+	</delete>
+	
+	<select id="getTokenFromPostNo" parameterType="Long" resultType="String">
+		<![CDATA[  
+			select token from pikiuserToken where user_no = (select user_no from post where post_no = #{post_no});
+		]]>
+	</select>
+	
+	<select id="getTokenFromUserId" parameterType="String" resultType="String">
+		<![CDATA[  
+			select token from pikiuserToken where user_no = (select user_no from pikiuser where user_id = #{user_id});
+		]]>
+	</select>
+	
+	<insert id="postPermissionAdd" parameterType="Map">
+		<![CDATA[
+			insert into pikipermission(post_no, user_no) values(#{post_no}, (select user_no from pikiuser where user_id=#{request_user_id}))
+		]]>
+	</insert>
+	
+	<select id="postPermissionCheck" parameterType="Map" resultType="Long">
+		<![CDATA[
+			select post_no from pikipermission where user_no = #{user_no} and post_no = #{post_no}
+		]]>
+	</select>
+	
+	
+</mapper>

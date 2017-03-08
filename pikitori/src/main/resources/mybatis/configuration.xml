@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="user" type="com.pikitori.web.vo.UserVo"/>
+		<typeAlias alias="post" type="com.pikitori.web.vo.PostVo"/>
+		<typeAlias alias="picture" type="com.pikitori.web.vo.PictureVo"/>
+		<typeAlias alias="tag" type="com.pikitori.web.vo.TagVo"/>
+		<typeAlias alias="comment" type="com.pikitori.web.vo.CommentVo"/>
+		<typeAlias alias="follow" type="com.pikitori.web.vo.FollowVo"/>
+		<typeAlias alias="heart" type="com.pikitori.web.vo.HeartVo"/>
+		<typeAlias alias="common" type="com.pikitori.web.vo.CommonVo"/>
+	</typeAliases>
+
+
+	<mappers>
+		<mapper resource="mybatis/user.xml" />
+		<mapper resource="mybatis/picture.xml" />
+		<mapper resource="mybatis/post.xml" />
+		<mapper resource="mybatis/tag.xml" />
+		<mapper resource="mybatis/comment.xml" />
+		<mapper resource="mybatis/follow.xml" />
+	</mappers>
+
+</configuration>

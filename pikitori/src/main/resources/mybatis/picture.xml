@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="picture">
+
+	<insert id="addPicture" parameterType="picture">
+	
+	insert into picture(picture_url,
+					    picture_ext,
+						picture_location,
+						picture_lat,
+						picture_lng,
+						picture_local_url,
+						user_no)
+		values
+			(#{picture_url},
+			#{picture_ext},
+			#{picture_location},
+			#{picture_lat},
+			#{picture_lng},
+			#{picture_local_url},
+			#{user_no})
+			
+	<selectKey keyProperty="picture_no" resultType="Long">
+		SELECT LAST_INSERT_ID()
+	</selectKey>
+	
+		
+	</insert>
+	
+	<update id="updatePictureURL" parameterType="picture" >
+		
+			UPDATE picture 
+			set
+				 picture_url=#{picture_url},
+				 picture_url_thumb=#{picture_url_thumb},
+				 picture_ext=#{picture_ext}
+			where
+				picture_no = #{picture_no}
+				
+	</update>
+	
+	<select id="getpictureuseingmap" parameterType="picture" resultType="picture">
+		select picture_url, 
+			picture_location, 
+			picture_lat, 
+			picture_lng, 
+			picture_local_url,
+			picture_url_thumb,  
+			user_no 
+		from picture 
+		where picture_location is not null 
+				and user_no = #{user_no}
+	</select>
+	
+	<select id="getPictureGallery" parameterType="post" resultType="picture">		
+		select 
+			p.picture_no,
+			p.picture_url,
+			p.picture_ext, 
+			p.picture_location, 
+			p.picture_lat, 
+			p.picture_lng, 
+			p.picture_local_url,
+			p.picture_url_thumb, 
+			p.user_no 
+		from picture p , album a 
+		where p.picture_no = a.picture_no and a.post_no = #{post_no};
+	</select>
+	
+	<delete id="deleteAlbum" parameterType="post" >
+		delete from album where post_no = #{post_no};
+	</delete>
+
+</mapper>
